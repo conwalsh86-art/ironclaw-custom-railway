@@ -1,34 +1,41 @@
 {
     "$schema": "https://railway.app/railway.json",
     "services": {
-        "ironclaw-custom-railway": {
+        "ironclaw": {
             "build": {
                 "builder": "DOCKERFILE",
                 "dockerfilePath": "Dockerfile"
             },
             "deploy": {
                 "numReplicas": 1,
-                "sleep": false,
                 "restartPolicyType": "ON_FAILURE",
                 "healthcheckPath": "/",
                 "healthcheckTimeout": 100
             },
             "networking": {
                 "serviceDomains": {
-                    "ironclaw-custom-railway": {
+                    "ironclaw": {
                         "port": 8080
                     }
                 }
             },
             "variables": {
-                "DATABASE_URL": "postgresql://${{ services.postgres.variables.POSTGRES_USER }}:${{ services.postgres.variables.POSTGRES_PASSWORD }}@postgres:5432/${{ services.postgres.variables.POSTGRES_DB }}"
-            },
-            "volumes": [
-                {
-                    "mountPath": "/home/ironclaw",
-                    "name": "ironclaw-data"
-                }
-            ]
+                "DATABASE_URL": "postgresql://${{ services.postgres.variables.POSTGRES_USER }}:${{ services.postgres.variables.POSTGRES_PASSWORD }}@postgres:5432/${{ services.postgres.variables.POSTGRES_DB }}",
+                "LLM_BACKEND": "openai",
+                "OPENAI_API_BASE": "https://integrate.api.nvidia.com/v1",
+                "OPENAI_MODEL_ID": "minimaxai/minimax-m2.5",
+                "OPENAI_API_KEY": "${{ secret() }}",
+                "LLM_FAILOVER_BACKEND": "openai",
+                "LLM_FAILOVER_API_KEY": "${{ secret() }}",
+                "GATEWAY_AUTH_TOKEN": "${{ secret(32) }}",
+                "SECRETS_MASTER_KEY": "${{ secret(64) }}",
+                "HTTP_WEBHOOK_SECRET": "${{ secret(32) }}",
+                "ONBOARD_COMPLETED": "true",
+                "SANDBOX_ENABLED": "false",
+                "PORT": "8080",
+                "HTTP_HOST": "0.0.0.0",
+                "HTTP_PORT": "8081"
+            }
         },
         "postgres": {
             "image": "pgvector/pgvector:pg16-trixie",
