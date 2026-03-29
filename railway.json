@@ -1,0 +1,39 @@
+{
+    "$schema": "https://railway.app/railway.json",
+    "build": {
+        "builder": "DOCKERFILE",
+        "dockerfilePath": "Dockerfile"
+    },
+    "deploy": {
+        "numReplicas": 1,
+        "sleep": false,
+        "restartPolicyType": "ON_FAILURE",
+        "healthcheckPath": "/",
+        "healthcheckTimeout": 100,
+        "volumes": [
+            {
+                "mountPath": "/home/ironclaw",
+                "name": "ironclaw-data"
+            }
+        ]
+    },
+    "variables": {
+        "DATABASE_URL": "postgresql://${{ services.postgres.variables.POSTGRES_USER }}:${{ services.postgres.variables.POSTGRES_PASSWORD }}@postgres:5432/${{ services.postgres.variables.POSTGRES_DB }}"
+    },
+    "services": {
+        "postgres": {
+            "image": "pgvector/pgvector:pg16-trixie",
+            "variables": {
+                "POSTGRES_DB": "ironclaw",
+                "POSTGRES_USER": "ironclaw",
+                "POSTGRES_PASSWORD": "${{ secret(16) }}"
+            },
+            "volumes": [
+                {
+                    "mountPath": "/var/lib/postgresql/data",
+                    "name": "postgres-data"
+                }
+            ]
+        }
+    }
+}
