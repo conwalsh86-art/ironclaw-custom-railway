@@ -67,11 +67,11 @@ jobs:
           owner: ${{ steps.source-repo.outputs.owner }}
           repositories: ${{ steps.source-repo.outputs.name }}
 
-      - name: Validate GitHub App credentials
-        if: ${{ env.GITHUB_APP_ID == '' || env.GITHUB_APP_PRIVATE_KEY == '' }}
+      - name: Validate cross-repo credentials
+        if: ${{ steps.source-token.outputs.token == '' && steps.source-repo.outputs.full != github.repository }}
         shell: bash
         run: |
-          echo "Missing GitHub App credentials in workflow repository." >&2
+          echo "Missing GitHub App credentials for cross-repo scan." >&2
           echo "Required names:" >&2
           echo "- app id: vars.GITHUB_APP_ID" >&2
           echo "- private key: secrets.GITHUB_APP_PRIVATE_KEY" >&2
@@ -81,7 +81,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ steps.source-repo.outputs.full }}
-          token: ${{ steps.source-token.outputs.token }}
+          token: ${{ steps.source-token.outputs.token || github.token }}
           fetch-depth: 1
 
       - name: Run TruffleHog
