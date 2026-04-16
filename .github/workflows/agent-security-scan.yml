@@ -320,8 +320,7 @@ jobs:
         run: |
           mkdir -p pdf_output
           if ! pandoc report.md -o pdf_output/report.pdf --pdf-engine=wkhtmltopdf; then
-            printf '%s
-' '<html><body><h1>Scan Report</h1><p>Primary markdown to PDF conversion failed. See artifacts for details.</p></body></html>' > pdf_output/fallback.html
+            printf '%s\n' '<html><body><h1>Scan Report</h1><p>Primary markdown to PDF conversion failed. See artifacts for details.</p></body></html>' > pdf_output/fallback.html
             wkhtmltopdf pdf_output/fallback.html pdf_output/report.pdf
           fi
 
